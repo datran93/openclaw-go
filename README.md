@@ -78,7 +78,7 @@ OpenClaw is a port of a personal AI assistant (originally TypeScript/Node.js) to
 ### 1. Clone & Build
 
 ```bash
-git clone https://github.com/openclaw/openclaw-go.git
+git clone https://github.com/datran93/openclaw-go.git
 cd openclaw-go
 make build          # builds → bin/openclaw
 ```

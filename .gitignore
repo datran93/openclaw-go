@@ -9,8 +9,8 @@
 
 # ─── Local config overrides ───────────────────────────────────────────────────
 # Developers can create openclaw.local.yaml with personal settings and secrets.
-# It will never be committed. Usage: openclaw -config openclaw.yaml
-openclaw.yaml
+# It will never be committed. Usage: openclaw -config openclaw.local.yaml
+openclaw.local.yaml
 
 # ─── OS & Editor ──────────────────────────────────────────────────────────────
 .DS_Store

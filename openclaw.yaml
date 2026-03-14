@@ -1,0 +1,43 @@
+# OpenClaw — default local development configuration
+# Committed to repo. Sensitive values use ${ENV_VAR} placeholders so no
+# real secrets are ever stored in version control.
+#
+# To override for your machine without affecting git, copy this file to
+# openclaw.local.yaml (already gitignored) and pass:
+#   openclaw -config openclaw.local.yaml
+
+# ─── Agent / LLM ──────────────────────────────────────────────────────────────
+agent:
+  provider: "anthropic"                   # openai | anthropic
+  model: "claude-3-5-haiku-20241022"
+  api_key: "${ANTHROPIC_API_KEY}"         # set env var before running
+  base_url: ""                            # leave empty for default endpoint
+  workspace: "~/.openclaw/workspace"      # tool sandbox directory
+
+# ─── Gateway ──────────────────────────────────────────────────────────────────
+gateway:
+  port: 18789
+  bind: "127.0.0.1"                       # use 0.0.0.0 to expose on LAN
+
+# ─── Logger ───────────────────────────────────────────────────────────────────
+logger:
+  level: "info"                           # debug | info | warn | error
+
+# ─── Channel Adapters ─────────────────────────────────────────────────────────
+channels:
+  cli:
+    enabled: true                         # stdin/stdout REPL (default on)
+  webchat:
+    enabled: false                        # WebSocket chat UI
+  telegram:
+    enabled: false
+    token: "${TELEGRAM_TOKEN}"            # set env var to enable Telegram bot
+
+# ─── Tools ────────────────────────────────────────────────────────────────────
+tools:
+  mcp: []
+  # Uncomment to enable MCP filesystem tool:
+  # mcp:
+  #   - name: filesystem
+  #     command: npx
+  #     args: ["-y", "@modelcontextprotocol/server-filesystem", "~/.openclaw/workspace"]
