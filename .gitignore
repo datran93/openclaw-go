@@ -1,0 +1,21 @@
+# ─── Build outputs ────────────────────────────────────────────────────────────
+/bin/
+*.exe
+
+# ─── Runtime data ─────────────────────────────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+
+# ─── Local config overrides ───────────────────────────────────────────────────
+# Developers can create openclaw.local.yaml with personal settings and secrets.
+# It will never be committed. Usage: openclaw -config openclaw.yaml
+openclaw.yaml
+
+# ─── OS & Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

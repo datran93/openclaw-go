@@ -1,0 +1,100 @@
+# openclaw.example.yaml — Fully annotated reference configuration
+#
+# USAGE: copy this file to openclaw.yaml (or openclaw.local.yaml for personal
+# overrides) and fill in the values. Never commit real secrets — always use
+# ${ENV_VAR} placeholders instead.
+#
+# This file is loaded automatically if named openclaw.yaml and placed next to
+# the openclaw binary. Pass a custom path with: openclaw -config <path>
+#
+# Environment variable expansion is supported in string values:
+#   token: "${MY_SECRET_TOKEN}"
+#   → resolved from the process environment at startup
+
+# ─── Agent / LLM ──────────────────────────────────────────────────────────────
+agent:
+  # provider: which LLM backend to use.
+  #   "anthropic" → Anthropic (Claude models, claude-3-5-haiku, claude-3-opus …)
+  #   "openai"    → OpenAI (gpt-4o, gpt-4o-mini …) or any OpenAI-compatible API
+  provider: "anthropic"
+
+  # model: the exact model identifier for the chosen provider.
+  model: "claude-3-5-haiku-20241022"
+  # model: "gpt-4o"                   # OpenAI example
+  # model: "gemini/gemini-2.0-flash"  # OpenAI-compatible proxy example
+
+  # api_key: the provider API key. NEVER commit a real key here.
+  # Use the ${ENV_VAR} syntax to read from the environment.
+  api_key: "${ANTHROPIC_API_KEY}"
+  # api_key: "${OPENAI_API_KEY}"      # OpenAI example
+
+  # base_url: override the API endpoint (useful for local proxies / LiteLLM).
+  # Leave empty to use the provider's default public endpoint.
+  base_url: ""
+  # base_url: "http://localhost:4000"  # LiteLLM proxy example
+
+  # workspace: directory used as the sandbox for file-based tools (read/write).
+  # The '~' prefix is expanded to the user's home directory.
+  workspace: "~/.openclaw/workspace"
+
+# ─── Gateway ──────────────────────────────────────────────────────────────────
+gateway:
+  # port: TCP port for the HTTP/WebSocket gateway.
+  # Override at runtime with: openclaw -port 8080
+  port: 18789
+
+  # bind: network interface to listen on.
+  #   "127.0.0.1" → localhost only (safe default)
+  #   "0.0.0.0"   → all interfaces (required for LAN/Docker access)
+  bind: "127.0.0.1"
+
+# ─── Logger ───────────────────────────────────────────────────────────────────
+logger:
+  # level: minimum log severity to emit.
+  # Accepted values (ascending): debug | info | warn | error
+  level: "info"
+
+# ─── Channel Adapters ─────────────────────────────────────────────────────────
+# Channels are the input/output interfaces to the agent.
+# Each adapter runs as an independent background goroutine.
+channels:
+  # cli: reads from stdin, writes to stdout.
+  # Ideal for interactive terminal use and local testing.
+  cli:
+    enabled: true   # set to false to disable REPL when using another channel
+
+  # webchat: WebSocket-based browser chat (served by the Gateway).
+  # Connect any WebSocket client to ws://<bind>:<port>/ws
+  webchat:
+    enabled: false  # set to true to enable browser chat
+
+  # telegram: connects to the Telegram Bot API via long-polling.
+  # Requires a Bot token from @BotFather.
+  telegram:
+    enabled: false
+    # token: your Telegram Bot token. Use ${ENV_VAR} — NEVER put the real value here.
+    token: "${TELEGRAM_TOKEN}"
+
+# ─── Tools ────────────────────────────────────────────────────────────────────
+tools:
+  # mcp: list of Model Context Protocol (MCP) servers to spawn as sub-processes.
+  # Each entry launches a server over stdio and exposes its tools to the agent.
+  #
+  # Schema for each entry:
+  #   name:    logical tool name used by the agent in tool calls
+  #   command: executable to run (must be on PATH)
+  #   args:    command-line arguments passed to the executable
+  mcp: []
+
+  # Example — MCP filesystem server (read/write files):
+  # mcp:
+  #   - name: filesystem
+  #     command: npx
+  #     args: ["-y", "@modelcontextprotocol/server-filesystem", "~/.openclaw/workspace"]
+
+  # Example — MCP Brave web search:
+  # mcp:
+  #   - name: brave-search
+  #     command: npx
+  #     args: ["-y", "@modelcontextprotocol/server-brave-search"]
+  #     # requires BRAVE_API_KEY env var to be set
