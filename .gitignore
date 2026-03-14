@@ -7,10 +7,10 @@
 *.db-shm
 *.db-wal
 
-# ─── Local config overrides ───────────────────────────────────────────────────
-# Developers can create openclaw.local.yaml with personal settings and secrets.
-# It will never be committed. Usage: openclaw -config openclaw.local.yaml
-openclaw.local.yaml
+# ─── Personal config (contains real secrets — never commit) ─────────────────
+# Copy openclaw.example.yaml → openclaw.yaml and fill in your real values.
+# The binary reads openclaw.yaml by default; it stays local only.
+openclaw.yaml
 
 # ─── OS & Editor ──────────────────────────────────────────────────────────────
 .DS_Store

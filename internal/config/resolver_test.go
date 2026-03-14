@@ -88,18 +88,19 @@ func TestResolve_DefaultFile_Absent(t *testing.T) {
 	}
 }
 
-// TestResolve_OpenclawyamlParsesClean: the committed openclaw.yaml at repo root
-// must be parseable without errors (guards against accidental breakage).
-func TestResolve_OpenclawyamlParsesClean(t *testing.T) {
-	// This test is intentionally skipped if run outside the repo root.
-	if _, err := os.Stat("../../openclaw.yaml"); os.IsNotExist(err) {
-		t.Skip("openclaw.yaml not found relative to test dir, skipping repo-root parse test")
+// TestResolve_ExampleYamlParsesClean: the committed openclaw.example.yaml at repo root
+// must always be parseable — it is the canonical template for end-users.
+func TestResolve_ExampleYamlParsesClean(t *testing.T) {
+	// Resolve relative to the test file location (internal/config/) → repo root.
+	const examplePath = "../../openclaw.example.yaml"
+	if _, err := os.Stat(examplePath); os.IsNotExist(err) {
+		t.Skip("openclaw.example.yaml not found relative to test dir")
 	}
-	cfg, err := config.Load("../../openclaw.yaml")
+	cfg, err := config.Load(examplePath)
 	if err != nil {
-		t.Fatalf("openclaw.yaml parse error: %v", err)
+		t.Fatalf("openclaw.example.yaml parse error: %v", err)
 	}
 	if cfg.Agent.Provider == "" {
-		t.Error("expected non-empty agent.provider in openclaw.yaml")
+		t.Error("expected non-empty agent.provider in openclaw.example.yaml")
 	}
 }

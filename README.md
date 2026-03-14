@@ -83,19 +83,29 @@ cd openclaw-go
 make build          # builds → bin/openclaw
 ```
 
-### 2. Set your API key
+### 2. Create your config from the template
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-# or for OpenAI:
-# export OPENAI_API_KEY="sk-..."
+cp openclaw.example.yaml openclaw.yaml
 ```
+
+Then open `openclaw.yaml` and fill in your **real** secret values:
+
+```yaml
+agent:
+  api_key: "sk-ant-..."          # your actual Anthropic key
+
+channels:
+  telegram:
+    token: "bot123456:ABC..."    # your Telegram bot token (if using Telegram)
+```
+
+> `openclaw.yaml` is gitignored — your secrets stay local and are never committed.
 
 ### 3. Run
 
 ```bash
-# Use the default config (openclaw.yaml is already set up)
-./bin/openclaw
+./bin/openclaw          # picks up openclaw.yaml automatically
 
 # Or with Make
 make run
@@ -113,7 +123,9 @@ I'm OpenClaw, your personal AI assistant...
 
 ## ⚙️ Configuration
 
-OpenClaw uses `openclaw.yaml` at the project root as its **config center**.
+OpenClaw looks for `openclaw.yaml` in the current directory as its **config center**.
+This file is **gitignored** — you put your real secrets directly in it.
+The committed [`openclaw.example.yaml`](openclaw.example.yaml) is the annotated template you copy from.
 
 ### Config resolution priority
 
@@ -150,15 +162,20 @@ tools:
 
 See [`openclaw.example.yaml`](openclaw.example.yaml) for the fully annotated reference with all options and examples.
 
-### Personal overrides
+### Config and secrets
 
-Create `openclaw.local.yaml` (gitignored) for personal settings:
+`openclaw.yaml` is gitignored. Put **real values** directly in it — no env var indirection needed:
 
-```bash
-cp openclaw.yaml openclaw.local.yaml
-# edit to taste…
-./bin/openclaw -config openclaw.local.yaml
+```yaml
+agent:
+  api_key: "sk-ant-api03-..."         # real key, stays local
+
+channels:
+  telegram:
+    token: "7123456789:AAF..."         # real token, stays local
 ```
+
+To start from scratch: `cp openclaw.example.yaml openclaw.yaml` and fill in your values.
 
 ---
 
@@ -270,8 +287,8 @@ openclaw-go/
 │   ├── router/           # central message dispatcher
 │   ├── session/          # SQLite + in-memory session store
 │   └── tools/            # bash, file I/O, MCP client
-├── openclaw.yaml         # default config (committed)
-├── openclaw.example.yaml # fully annotated reference config
+├── openclaw.yaml         # YOUR config — gitignored, contains real secrets
+├── openclaw.example.yaml # committed template — copy this to get started
 └── DESIGN.md             # architectural decisions
 ```
 
