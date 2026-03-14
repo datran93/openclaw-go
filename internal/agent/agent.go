@@ -31,7 +31,21 @@ type Provider string
 const (
 	ProviderOpenAI    Provider = "openai"
 	ProviderAnthropic Provider = "anthropic"
+
+	// OpenAI-compatible providers — reuse OpenAIAgent with a custom base_url.
+	ProviderOpenRouter Provider = "openrouter"
+	ProviderOllama     Provider = "ollama"
+	ProviderGroq       Provider = "groq"
 )
+
+// isOpenAICompatible returns true for providers that speak the OpenAI Chat Completions API.
+func isOpenAICompatible(p Provider) bool {
+	switch p {
+	case ProviderOpenAI, ProviderOpenRouter, ProviderOllama, ProviderGroq:
+		return true
+	}
+	return false
+}
 
 // NewAgent factory
 func NewAgent(provider Provider, model string, apiKey string, baseURL string) (AgentService, error) {
@@ -39,8 +53,8 @@ func NewAgent(provider Provider, model string, apiKey string, baseURL string) (A
 		return nil, errors.New("api key is required")
 	}
 
-	switch provider {
-	case ProviderOpenAI:
+	switch {
+	case isOpenAICompatible(provider):
 		config := openai.DefaultConfig(apiKey)
 		if baseURL != "" {
 			config.BaseURL = baseURL
@@ -49,7 +63,7 @@ func NewAgent(provider Provider, model string, apiKey string, baseURL string) (A
 			client: openai.NewClientWithConfig(config),
 			model:  model,
 		}, nil
-	case ProviderAnthropic:
+	case provider == ProviderAnthropic:
 		opts := []anthropic.ClientOption{}
 		if baseURL != "" {
 			opts = append(opts, anthropic.WithBaseURL(baseURL))
@@ -59,7 +73,7 @@ func NewAgent(provider Provider, model string, apiKey string, baseURL string) (A
 			model:  model,
 		}, nil
 	default:
-		return nil, fmt.Errorf("unsupported provider: %s", provider)
+		return nil, fmt.Errorf("unsupported provider: %q (supported: openai, anthropic, openrouter, ollama, groq)", provider)
 	}
 }
 
